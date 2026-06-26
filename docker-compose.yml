@@ -1,0 +1,26 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: vehicle-location-kafka
+    ports:
+      - "127.0.0.1:29092:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+      - ./kafka/server.properties:/etc/kafka/kraft/server.properties:ro
+    command:
+      - bash
+      - -lc
+      - |
+        kafka-storage format --ignore-formatted -t MkU3OEVBNTcwNTJENDM2Qk -c /etc/kafka/kraft/server.properties
+        kafka-server-start /etc/kafka/kraft/server.properties
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vehicle-location-app
+    depends_on:
+      - kafka
+
+volumes:
+  kafka-data:
